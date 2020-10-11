@@ -122,6 +122,8 @@ function print_user_points($user_email, $user_nicename, $user_points){
 
 if ($join_result->num_rows > 0) {
     $current_user = -1;
+    $current_user_email = "";
+    $current_user_nicename = "";
     $user_points = 0;
     $n_row = 0;
     while($row = $join_result->fetch_assoc()) {
@@ -130,9 +132,11 @@ if ($join_result->num_rows > 0) {
         // summary row per user
         if ($current_user != $row["userID"]){
             if ($current_user != -1){
-                print_user_points($user_email, $user_nicename, $user_points);
+                print_user_points($current_user_email, $current_user_nicename, $user_points);
             }
             $current_user = $row["userID"];
+            $current_user_email = $row["user_email"];
+            $current_user_nicename = $row["user_nicename"];
             $user_points = $row["punktzahl"];
         } else{
             $user_points = $user_points + $row["punktzahl"];
@@ -153,7 +157,7 @@ if ($join_result->num_rows > 0) {
             "</tr>"
         );
     }
-    print_user_points($user_email, $user_nicename, $user_points);
+    print_user_points($current_user_email, $current_user_nicename, $user_points);
 } else {
     echo "0 results";
 }
