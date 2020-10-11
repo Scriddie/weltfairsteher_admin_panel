@@ -54,7 +54,7 @@ if ($active_users->num_rows > 0) {
 }
 
 $join_query = "
-    SELECT users.user_email
+    SELECT users.user_email user_email
          , users.user_nicename user_nicename
          , userID
          , challengeID
