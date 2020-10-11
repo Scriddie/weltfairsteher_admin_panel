@@ -54,11 +54,12 @@ if ($active_users->num_rows > 0) {
 }
 
 $join_query = "
-    SELECT userID
+    SELECT users.user_email
+         , users.user_nicename user_nicename
+         , userID
          , challengeID
          , challengeState
          , posts.post_title post_title
-         , users.user_nicename user_nicename
          , CASE 
                  WHEN challengeState = 2 THEN post_meta.meta_value + post_meta2.meta_value * 2
                  ELSE post_meta.meta_value
@@ -86,18 +87,19 @@ $join_result = $conn->query($join_query);
 echo "<table>";
 echo (
     "<tr>" .
+    "<th>user_email</th>" .
+    "<th>user_nicename</th>" . 
     "<th>userID</th>" .
     "<th>challengeID</th>" .
     "<th>challengeState</hh>" .
     "<th>post_title</th>" . 
-    "<th>user_nicename</th>" . 
     "<th>Punktzahl</th>" . 
     "<th>Gesamtpunktzahl</th>" . 
     "</tr>"
 );
 
 function print_user_points($user_points){
-    echo "<tr> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td><b>" . $user_points . "</b></td></tr>";
+    echo "<tr> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td><b>" . $user_points . "</b></td></tr>";
 }
 
 if ($join_result->num_rows > 0) {
@@ -115,11 +117,12 @@ if ($join_result->num_rows > 0) {
         }
         echo (
             "<tr>" . 
+            "<td>" . $row["user_email"] . "</td>" .
+            "<td>" . $row["user_nicename"] . "</td>" . 
             "<td>" . $row["userID"] . "</td>" . 
             "<td>" . $row["challengeID"] . "</td>" . 
             "<td>" . $row["challengeState"] . "</td>" . 
             "<td>" . $row["post_title"] . "</td>" . 
-            "<td>" . $row["user_nicename"] . "</td>" . 
             "<td>" . $row["punktzahl"] . "</td>" . 
             "</tr>"
         );
