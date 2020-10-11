@@ -1,5 +1,5 @@
 <!-- inspiration for php db connection: https://www.w3schools.com/php/php_mysql_select.asp -->
-<html>
+    <html>
 
 <head>
 <meta http-equiv="Content-Type" content="text/html"; charset="utf-8" />
@@ -79,6 +79,7 @@ $join_query = "
     AND user_meta.meta_value != 'inactive'
     AND post_meta.meta_key LIKE 'wpcf%punktzahl'
     AND post_meta2.meta_key LIKE 'wpcf%zusatzpunkte'
+    AND NOT (users.user_nicename IN ('kai-hennig', 'demo_team', 'testlukas'))
     ORDER BY userID ASC
 ";
 
@@ -89,45 +90,70 @@ echo (
     "<tr>" .
     "<th>user_email</th>" .
     "<th>user_nicename</th>" . 
-    "<th>userID</th>" .
-    "<th>challengeID</th>" .
-    "<th>challengeState</hh>" .
+    // "<th>userID</th>" .
+    // "<th>challengeID</th>" .
+    // "<th>challengeState</hh>" .
     "<th>post_title</th>" . 
     "<th>Punktzahl</th>" . 
-    "<th>Gesamtpunktzahl</th>" . 
+    "<th>Gesamtpunktzahl</th>" .
+    "<th>Etappe</th>" . 
     "</tr>"
 );
 
-function print_user_points($user_points){
-    echo "<tr> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td><b>" . $user_points . "</b></td></tr>";
+function print_user_points($user_email, $user_nicename, $user_points){
+    if ($user_points < 20){
+        $etappe = "<p style='color:red;'>1</p>";
+    } elseif ($user_points < 40){
+        $etappe = "<p style='color:orange;'>1</p>";
+    } elseif ($user_points < 60){
+        $etappe = "<p style='color:green;'>1</p>";
+    } else {
+        $etappe = "<p style='color:blue;'>1</p>";
+    }    
+    echo "<tr style='background-color:#F8E7E3'>" . 
+         "<td><b>" . $user_email . "</b></td>" . 
+         "<td><b>" . $user_nicename . "</b></td>" . 
+         "<td></td>" . 
+         "<td></td>" .
+         "<td><b>" . $user_points . "</b></td>" . 
+         "<td><b>" . $etappe . "</b></td>" . 
+         "</tr>";
 }
 
 if ($join_result->num_rows > 0) {
     $current_user = -1;
     $user_points = 0;
+    $n_row = 0;
     while($row = $join_result->fetch_assoc()) {
+        $n_row = $n_row +1;
+
+        // summary row per user
         if ($current_user != $row["userID"]){
             if ($current_user != -1){
-                print_user_points($user_points);
+                print_user_points($user_email, $user_nicename, $user_points);
             }
             $current_user = $row["userID"];
             $user_points = $row["punktzahl"];
         } else{
             $user_points = $user_points + $row["punktzahl"];
         }
+
+        // regular row
         echo (
             "<tr>" . 
             "<td>" . $row["user_email"] . "</td>" .
             "<td>" . $row["user_nicename"] . "</td>" . 
-            "<td>" . $row["userID"] . "</td>" . 
-            "<td>" . $row["challengeID"] . "</td>" . 
-            "<td>" . $row["challengeState"] . "</td>" . 
+            // "<td>" . $row["userID"] . "</td>" . 
+            // "<td>" . $row["challengeID"] . "</td>" . 
+            // "<td>" . $row["challengeState"] . "</td>" . 
             "<td>" . $row["post_title"] . "</td>" . 
             "<td>" . $row["punktzahl"] . "</td>" . 
+            "<td></td>" . 
+            "<td></td>" . 
             "</tr>"
         );
     }
-    print_user_points($user_points);
+    print_user_points($user_email, $user_nicename, $user_points);
 } else {
     echo "0 results";
 }
